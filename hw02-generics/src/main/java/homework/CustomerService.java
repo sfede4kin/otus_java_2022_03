@@ -17,27 +17,23 @@ public class CustomerService {
 
     public Map.Entry<Customer, String> getSmallest() {
         //Возможно, чтобы реализовать этот метод, потребуется посмотреть как Map.Entry сделан в jdk
-        Map.Entry<Customer, String> first = treeMap.firstEntry();
-        return  Map.entry(
-                    new Customer(first.getKey().getId(), first.getKey().getName(), first.getKey().getScores()),
-                    first.getValue()
-                );
+        return copyCustomerMapEntry(treeMap.firstEntry());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
         Map.Entry<Customer, String> next = treeMap.higherEntry(customer);
-        if(next != null){
-            //here we also create copies of entry objects
-            return  Map.entry(
-                        new Customer(next.getKey().getId(), next.getKey().getName(), next.getKey().getScores()),
-                        next.getValue()
-                    );
-        }else{
-            return null;
-        }
+        //here we also create copies of entry objects
+        return next != null ? copyCustomerMapEntry(next) : null;
     }
 
     public void add(Customer customer, String data) {
         treeMap.put(customer, data);
+    }
+
+    private static Map.Entry<Customer, String> copyCustomerMapEntry(Map.Entry<Customer, String> entry){
+        return  Map.entry(
+                    new Customer(entry.getKey().getId(), entry.getKey().getName(), entry.getKey().getScores()),
+                    entry.getValue()
+        );
     }
 }
