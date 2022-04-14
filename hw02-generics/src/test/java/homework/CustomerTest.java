@@ -95,7 +95,6 @@ class CustomerTest {
     }
 
     @Test
-    @Disabled //надо удалить
     @DisplayName("Модификация коллекции")
     void mutationTest() {
         //given
