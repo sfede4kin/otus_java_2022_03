@@ -4,8 +4,7 @@ import ru.otus.test.statistics.TestResult;
 import ru.otus.test.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 public class TestRunner {
 
@@ -22,10 +21,10 @@ public class TestRunner {
             Object obj = ReflectionUtil.instantiate(clazz);
             Method[] methods = obj.getClass().getMethods();
 
-            List<Map.Entry<Integer, Method>> methodsOrdered = ReflectionUtil.orderMethodsByAnnotations(methods);
-            methodsOrdered.forEach(m -> {
+            TreeMap<Integer, Method> methodsOrdered = ReflectionUtil.orderMethodsByAnnotations(methods);
+            methodsOrdered.forEach((k,v) -> {
                     try {
-                        String methodName = m.getValue().getName();
+                        var methodName = v.getName();
                         System.out.println(methodName);
                         ReflectionUtil.callMethod(obj, methodName);
                         result.addSuccess();

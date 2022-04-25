@@ -2,12 +2,9 @@ package ru.otus.test.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 public class ReflectionUtil {
 
@@ -48,29 +45,22 @@ public class ReflectionUtil {
         return Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new);
     }
 
-    public static List<Map.Entry<Integer, Method>> orderMethodsByAnnotations(Method[] methods){
-        List<Map.Entry<Integer, Method>> entries = new ArrayList<>();
+    public static TreeMap<Integer, Method> orderMethodsByAnnotations(Method[] methods){
+        var i = 0;
+        TreeMap<Integer, Method> treeMap = new TreeMap<>(Comparator.comparingInt(e -> e));
 
         for (Method method : methods) {
             for (Annotation annotation : method.getDeclaredAnnotations()) {
                 if (annotation instanceof ru.otus.test.annotations.Before){
-                    entries.add(new AbstractMap.SimpleEntry<>(1, method));
+                    treeMap.put(1000 + i, method);
                 }else if(annotation instanceof ru.otus.test.annotations.Test) {
-                    entries.add(new AbstractMap.SimpleEntry<>(2, method));
+                    treeMap.put(2 * 1000 + i, method);
                 }else if(annotation instanceof ru.otus.test.annotations.After){
-                    entries.add(new AbstractMap.SimpleEntry<>(3, method));
+                    treeMap.put(3 * 1000 + i, method);
                 }
+                i++;
             }
         }
-
-        entries.sort(new Comparator<>() {
-            @Override
-            public int compare(
-                    Map.Entry<Integer, Method> o1, Map.Entry<Integer, Method> o2) {
-                return o1.getKey().compareTo(o2.getKey());
-            }
-        });
-
-        return entries;
+        return treeMap;
     }
 }
