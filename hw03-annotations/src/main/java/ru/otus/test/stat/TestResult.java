@@ -1,4 +1,4 @@
-package ru.otus.test.statistics;
+package ru.otus.test.stat;
 
 public class TestResult {
     private final String name;

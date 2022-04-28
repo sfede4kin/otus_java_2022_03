@@ -1,45 +1,38 @@
 package ru.otus.test;
 
-import ru.otus.test.statistics.TestResult;
+import ru.otus.test.stat.TestResult;
 import ru.otus.test.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
-import java.util.TreeMap;
+import java.util.List;
 
 public class TestRunner {
 
     public static void main(String[] args){
-        TestRunner.run("ru.otus.test.AnnotationTestNotExists");
-        TestRunner.run("ru.otus.test.AnnotationTest1");
-        TestRunner.run("ru.otus.test.AnnotationTest2");
+        TestRunner.run(AnnotationTest1.class);
+        //TestRunner.run(AnnotationTest2.class);
     }
 
-    public static void run(String className){
-        TestResult result = new TestResult(className);
-        try{
-            Class<?> clazz = ReflectionUtil.getClass(className);
+    public static void run(Class<?> clazz){
+
+        List<List<Method>> methodTripleList = ReflectionUtil.getMethodTriple(clazz.getMethods());
+
+        for(List<Method> methodTriple : methodTripleList){
+            System.out.println(methodTriple.toString());
+            TestResult result = new TestResult(clazz.getName());
             Object obj = ReflectionUtil.instantiate(clazz);
-            Method[] methods = obj.getClass().getMethods();
 
-            TreeMap<Integer, Method> methodsOrdered = ReflectionUtil.orderMethodsByAnnotations(methods);
-            methodsOrdered.forEach((k,v) -> {
-                    try {
-                        var methodName = v.getName();
-                        System.out.println(methodName);
-                        ReflectionUtil.callMethod(obj, methodName);
-                        result.addSuccess();
-                    }catch(Exception e){
-                        result.addFailed();
-                        printRed(e.toString());
-                    }
-                });
-
-        }catch(Exception e){
-            result.addFailed();
-            printRed(e.toString());
+            for(Method method : methodTriple){
+                try {
+                    ReflectionUtil.callMethod(obj, method.getName());
+                    result.addSuccess();
+                }catch(Exception e){
+                    result.addFailed();
+                    printRed(e.toString());
+                }
+            }
+            printGreen(result.toString());
         }
-
-        printGreen(result.toString());
 
     }
 

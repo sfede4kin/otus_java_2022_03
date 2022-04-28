@@ -2,20 +2,18 @@ package ru.otus.test.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeMap;
+import ru.otus.test.annotations.Test;
+import ru.otus.test.annotations.After;
+import ru.otus.test.annotations.Before;
 
 public class ReflectionUtil {
 
-    public ReflectionUtil() {}
-
-    public static Class<?> getClass(String name){
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public ReflectionUtil() {
     }
 
     public static Object callMethod(Object object, String name, Object... args) {
@@ -45,22 +43,40 @@ public class ReflectionUtil {
         return Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new);
     }
 
-    public static TreeMap<Integer, Method> orderMethodsByAnnotations(Method[] methods){
-        var i = 0;
-        TreeMap<Integer, Method> treeMap = new TreeMap<>(Comparator.comparingInt(e -> e));
+    public static List<List<Method>> getMethodTriple(Method[] methods){
+        List<Method> testMethods = getTestMethods(methods);
+        List<List<Method>> methodTriple = new ArrayList<>();
 
+        for(Method test : testMethods){
+            TreeMap<Integer, Method> treeMap = new TreeMap<>(Comparator.comparingInt(e -> e));
+
+            for(Method method : methods){
+                for (Annotation annotation : method.getDeclaredAnnotations()) {
+                    if (annotation instanceof Before) {
+                        treeMap.put(1, method);
+                    } else if (annotation instanceof Test &&
+                               method.getName().equals(test.getName())) {
+                        treeMap.put(2, method);
+                    } else if (annotation instanceof After) {
+                        treeMap.put(3, method);
+                    }
+                }
+            }
+            methodTriple.add(treeMap.values().stream().toList());
+        }
+        return methodTriple;
+    }
+
+    public static List<Method> getTestMethods(Method[] methods) {
+        List<Method> list = new ArrayList<>();
         for (Method method : methods) {
             for (Annotation annotation : method.getDeclaredAnnotations()) {
-                if (annotation instanceof ru.otus.test.annotations.Before){
-                    treeMap.put(1000 + i, method);
-                }else if(annotation instanceof ru.otus.test.annotations.Test) {
-                    treeMap.put(2 * 1000 + i, method);
-                }else if(annotation instanceof ru.otus.test.annotations.After){
-                    treeMap.put(3 * 1000 + i, method);
+                if (annotation instanceof Test) {
+                    list.add(method);
                 }
-                i++;
             }
         }
-        return treeMap;
+        return list;
     }
+
 }
