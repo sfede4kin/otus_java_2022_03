@@ -4,6 +4,12 @@
 # Log file
 *.log
 
+#logs directory
+logs
+
+#Heap dump file
+*.hprof
+
 # BlueJ files
 *.ctxt
 
