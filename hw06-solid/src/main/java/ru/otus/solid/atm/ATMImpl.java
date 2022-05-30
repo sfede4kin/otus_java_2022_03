@@ -81,7 +81,7 @@ public class ATMImpl implements ATM{
     @Override
     public List<Banknote> getCash(int sum) {
 
-        Map<Integer, Integer> banknoteCalcMap = calculateBanknotesToGet(sum, holderTreeMap);
+        Map<Integer, Integer> banknoteCalcMap = calculateBanknotesToGet(sum);
         List<Banknote> banknoteList = new ArrayList<>();
 
         //key = номинал, value = количество банкнот
@@ -94,7 +94,7 @@ public class ATMImpl implements ATM{
         return banknoteList;
     }
 
-    private Map<Integer, Integer> calculateBanknotesToGet(int sum, Map<Integer, BanknoteHolder> holderTreeMap){
+    private Map<Integer, Integer> calculateBanknotesToGet(int sum){
 
         if(sum > getBalance()){
             throw new RuntimeException(EX_SUM_NOT_AVAILABLE);
