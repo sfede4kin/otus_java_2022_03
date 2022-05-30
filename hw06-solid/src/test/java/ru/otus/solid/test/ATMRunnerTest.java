@@ -166,4 +166,12 @@ public class ATMRunnerTest {
 
     }
 
+    @Test
+    @DisplayName("Неизвестный номинал банкноты")
+    void cashInUnknownNominalBanknoteExceptionTest(){
+
+        assertThrows(RuntimeException.class, ()-> BanknoteFactory.getBanknote(3));
+
+    }
+
 }
