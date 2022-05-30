@@ -3,10 +3,6 @@ package ru.otus.solid.atm;
 import ru.otus.solid.atm.holder.BanknoteHolder;
 import ru.otus.solid.atm.holder.BanknoteHolderImpl;
 import ru.otus.solid.banknote.Banknote;
-import ru.otus.solid.banknote.Banknote10;
-import ru.otus.solid.banknote.Banknote100;
-import ru.otus.solid.banknote.Banknote1000;
-import ru.otus.solid.banknote.Banknote500;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,12 +74,7 @@ public class ATMImpl implements ATM{
 
     @Override
     public void addCash(List<Banknote> banknotes) {
-        banknotes.forEach(bn ->{
-            if(bn instanceof Banknote10) holderTreeMap.get(bn.getValue()).add(bn);
-            if(bn instanceof Banknote100) holderTreeMap.get(bn.getValue()).add(bn);
-            if(bn instanceof Banknote500) holderTreeMap.get(bn.getValue()).add(bn);
-            if(bn instanceof Banknote1000)holderTreeMap.get(bn.getValue()).add(bn);
-        });
+        banknotes.forEach(bn -> holderTreeMap.get(bn.getValue()).add(bn));
 
     }
 
