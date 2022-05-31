@@ -1,10 +1,10 @@
 package ru.otus.solid.banknote;
 
 public class Banknote100 implements Banknote{
-    private final static int VALUE = 100;
+    private final static BanknoteEnum VALUE = BanknoteEnum.Banknote100;
 
     @Override
-    public int getValue() {
+    public BanknoteEnum getValue() {
         return VALUE;
     }
 }

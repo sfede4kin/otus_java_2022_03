@@ -1,6 +1,7 @@
 package ru.otus.solid.atm.holder;
 
 import ru.otus.solid.banknote.Banknote;
+import ru.otus.solid.banknote.BanknoteEnum;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,18 +9,18 @@ import java.util.Queue;
 
 public class BanknoteHolderImpl implements BanknoteHolder{
 
-    private final int nominal;
+    private final BanknoteEnum nominal;
     private final static int MAX_SIZE = 10;
 
     private final Queue<Banknote> banknoteQueue = new LinkedList<>();
 
-    public BanknoteHolderImpl(int nominal, List<Banknote> banknotes){
+    public BanknoteHolderImpl(BanknoteEnum nominal, List<Banknote> banknotes){
         this.nominal = nominal;
         this.banknoteQueue.addAll(banknotes);
     }
 
     @Override
-    public int getNominal() {
+    public BanknoteEnum getNominal() {
         return nominal;
     }
 
@@ -29,12 +30,7 @@ public class BanknoteHolderImpl implements BanknoteHolder{
     }
 
     @Override
-    public int getBalance(){ return getSize() * getNominal();}
-
-/*    @Override
-    public boolean checkCashIn(int count){
-        return count <= MAX_SIZE - banknoteQueue.size();
-    }*/
+    public int getBalance(){ return getSize() * getNominal().getNominal();}
 
     @Override
     public boolean checkCashOut(int count){

@@ -3,6 +3,7 @@ package ru.otus.solid.atm;
 import ru.otus.solid.atm.holder.BanknoteHolder;
 import ru.otus.solid.atm.holder.BanknoteHolderImpl;
 import ru.otus.solid.banknote.Banknote;
+import ru.otus.solid.banknote.BanknoteEnum;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,36 +14,33 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class ATMImpl implements ATM{
-    private final Map<Integer, BanknoteHolder> holderTreeMap;
-    private static final String EX_SUM_NOT_AVAILABLE = "Requested sum is not available in ATM";
-
+    private final Map<BanknoteEnum, BanknoteHolder> holderTreeMap;
     private ATMImpl(Builder builder) {
         this.holderTreeMap = builder.holderTreeMap;
     }
-
     public static class Builder {
-        private final Map<Integer, BanknoteHolder> holderTreeMap = new TreeMap<>(Collections.reverseOrder());
+        private final Map<BanknoteEnum, BanknoteHolder> holderTreeMap = new TreeMap<>(Collections.reverseOrder());
 
         public Builder withHolder10(List<Banknote> banknotes){
-            int nominal = 10;
+            BanknoteEnum nominal = BanknoteEnum.Banknote10;
             this.holderTreeMap.put(nominal, new BanknoteHolderImpl(nominal, banknotes));
             return this;
         }
 
         public Builder withHolder100(List<Banknote> banknotes){
-            int nominal = 100;
+            BanknoteEnum nominal = BanknoteEnum.Banknote100;
             this.holderTreeMap.put(nominal, new BanknoteHolderImpl(nominal, banknotes));
             return this;
         }
 
         public Builder withHolder500(List<Banknote> banknotes){
-            int nominal = 500;
+            BanknoteEnum nominal = BanknoteEnum.Banknote500;
             this.holderTreeMap.put(nominal, new BanknoteHolderImpl(nominal, banknotes));
             return this;
         }
 
         public Builder withHolder1000(List<Banknote> banknotes){
-            int nominal = 1000;
+            BanknoteEnum nominal = BanknoteEnum.Banknote1000;
             this.holderTreeMap.put(nominal, new BanknoteHolderImpl(nominal, banknotes));
             return this;
         }
@@ -81,7 +79,7 @@ public class ATMImpl implements ATM{
     @Override
     public List<Banknote> getCash(int sum) {
 
-        Map<Integer, Integer> banknoteCalcMap = calculateBanknotesToGet(sum);
+        Map<BanknoteEnum, Integer> banknoteCalcMap = calculateBanknotesToGet(sum);
         List<Banknote> banknoteList = new ArrayList<>();
 
         //key = номинал, value = количество банкнот
@@ -94,31 +92,31 @@ public class ATMImpl implements ATM{
         return banknoteList;
     }
 
-    private Map<Integer, Integer> calculateBanknotesToGet(int sum){
+    private Map<BanknoteEnum, Integer> calculateBanknotesToGet(int sum){
 
         if(sum > getBalance()){
-            throw new RuntimeException(EX_SUM_NOT_AVAILABLE);
+            throw new SumNotAvailableException();
         }
 
         int sumRemain = sum;
-        Map<Integer, Integer> banknoteCalcMap = new HashMap<>();
+        Map<BanknoteEnum, Integer> banknoteCalcMap = new HashMap<>();
 
         for(var bh : holderTreeMap.values()){
-            int banknoteToRequest = sumRemain / bh.getNominal(); //целое число без остатка
-            sumRemain = sumRemain - banknoteToRequest * bh.getNominal();
-            System.out.println("nominal=" + bh.getNominal() + ",banknoteToRequest="
-                    + banknoteToRequest + ",sumRemain=" + sumRemain);
+            int banknoteToGet = sumRemain / bh.getNominal().getNominal(); //целое число без остатка
+            sumRemain = sumRemain - banknoteToGet * bh.getNominal().getNominal();
+            System.out.println("nominal=" + bh.getNominal() + ",banknoteToGet="
+                    + banknoteToGet + ",sumRemain=" + sumRemain);
 
-            if(banknoteToRequest > 0){
-                if(!bh.checkCashOut(banknoteToRequest)) {
-                    throw new RuntimeException(EX_SUM_NOT_AVAILABLE);
+            if(banknoteToGet > 0){
+                if(!bh.checkCashOut(banknoteToGet)) {
+                    throw new SumNotAvailableException();
                 }
-                banknoteCalcMap.put(bh.getNominal(), banknoteToRequest);
+                banknoteCalcMap.put(bh.getNominal(), banknoteToGet);
             }
         }
 
         if(sumRemain > 0){
-            throw new RuntimeException(EX_SUM_NOT_AVAILABLE);
+            throw new SumNotAvailableException();
         }
 
         return banknoteCalcMap;

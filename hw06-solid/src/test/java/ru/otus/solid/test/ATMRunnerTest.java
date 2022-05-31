@@ -4,11 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.solid.atm.ATM;
 import ru.otus.solid.atm.ATMImpl;
+import ru.otus.solid.atm.SumNotAvailableException;
 import ru.otus.solid.banknote.Banknote;
 import ru.otus.solid.banknote.Banknote10;
 import ru.otus.solid.banknote.Banknote100;
 import ru.otus.solid.banknote.Banknote1000;
 import ru.otus.solid.banknote.Banknote500;
+import ru.otus.solid.banknote.BanknoteEnum;
 import ru.otus.solid.banknote.BanknoteFactory;
 
 import java.util.List;
@@ -23,16 +25,16 @@ public class ATMRunnerTest {
     void initATMTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
         assertThat(atm.getBalance()).isEqualTo(3730);
@@ -44,22 +46,22 @@ public class ATMRunnerTest {
     void cashInTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
-        atm.addCash(List.of(BanknoteFactory.getBanknote(10),
-                BanknoteFactory.getBanknote(100),
-                BanknoteFactory.getBanknote(500),
-                BanknoteFactory.getBanknote(1000)
+        atm.addCash(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)
         ));
 
         assertThat(atm.getBalance()).isEqualTo(5340);
@@ -71,16 +73,16 @@ public class ATMRunnerTest {
     void cashOutTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
         atm.getCash(2620);
@@ -94,19 +96,19 @@ public class ATMRunnerTest {
     void cashOutSumExceptionTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
-        assertThrows(RuntimeException.class, ()-> atm.getCash(4000));
+        assertThrows(SumNotAvailableException.class, ()-> atm.getCash(4000));
 
     }
 
@@ -115,16 +117,16 @@ public class ATMRunnerTest {
     void cashOutBanknoteCheckTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
         List<Banknote> cash = atm.getCash(1620);
@@ -150,27 +152,19 @@ public class ATMRunnerTest {
     void cashOutBanknoteCountExceptionTest(){
 
         ATM atm = new ATMImpl.Builder()
-                .withHolder10(List.of(BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10),
-                        BanknoteFactory.getBanknote(10)))
-                .withHolder100(List.of(BanknoteFactory.getBanknote(100),
-                        BanknoteFactory.getBanknote(100)))
-                .withHolder500(List.of(BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500),
-                        BanknoteFactory.getBanknote(500)))
-                .withHolder1000(List.of(BanknoteFactory.getBanknote(1000),
-                        BanknoteFactory.getBanknote(1000)))
+                .withHolder10(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote10)))
+                .withHolder100(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote100),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote100)))
+                .withHolder500(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote500)))
+                .withHolder1000(List.of(BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000),
+                        BanknoteFactory.getBanknote(BanknoteEnum.Banknote1000)))
                 .build();
 
-        assertThrows(RuntimeException.class, ()-> atm.getCash(15));
-
-    }
-
-    @Test
-    @DisplayName("Неизвестный номинал банкноты")
-    void cashInUnknownNominalBanknoteExceptionTest(){
-
-        assertThrows(RuntimeException.class, ()-> BanknoteFactory.getBanknote(3));
+        assertThrows(SumNotAvailableException.class, ()-> atm.getCash(15));
 
     }
 

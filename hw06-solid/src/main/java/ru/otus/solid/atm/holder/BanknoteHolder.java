@@ -1,11 +1,10 @@
 package ru.otus.solid.atm.holder;
 
 import ru.otus.solid.banknote.Banknote;
-
-import java.util.List;
+import ru.otus.solid.banknote.BanknoteEnum;
 
 public interface BanknoteHolder {
-    public int getNominal();
+    public BanknoteEnum getNominal();
 
     public int getSize();
 
