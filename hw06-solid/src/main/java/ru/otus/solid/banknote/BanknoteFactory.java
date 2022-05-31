@@ -9,7 +9,6 @@ public class BanknoteFactory {
             case Banknote100 -> new Banknote100();
             case Banknote500 -> new Banknote500();
             case Banknote1000 -> new Banknote1000();
-            default -> throw new IllegalArgumentException("unknown banknote: " + nominal.getNominal());
         };
 
 /*        if(nominal == 10) return new Banknote10();
