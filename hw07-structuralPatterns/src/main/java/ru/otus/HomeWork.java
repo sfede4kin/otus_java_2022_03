@@ -7,8 +7,10 @@ import ru.otus.model.ObjectForMessage;
 import ru.otus.processor.LoggerProcessor;
 import ru.otus.processor.ProcessorConcatFields;
 import ru.otus.processor.ProcessorUpperField10;
+import ru.otus.processor.homework.ProcessorEvenNumberSecondErr;
 import ru.otus.processor.homework.ProcessorSwitchField11Field12;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +35,14 @@ public class HomeWork {
            из элеменов "to do" создать new ComplexProcessor и обработать сообщение
          */
 
+        System.out.println(LocalDateTime.now());
+
         var processors = List.of(new ProcessorConcatFields(),
                 new LoggerProcessor(new ProcessorUpperField10()),
-                new LoggerProcessor(new ProcessorSwitchField11Field12()));
+                new LoggerProcessor(new ProcessorSwitchField11Field12()),
+                new LoggerProcessor(new ProcessorEvenNumberSecondErr(LocalDateTime::now))); //передаем лямбду, а не значение
 
-        var complexProcessor = new ComplexProcessor(processors, ex -> {});
+        var complexProcessor = new ComplexProcessor(processors, ex -> {throw new RuntimeException(ex.getMessage());});
         var listenerPrinter = new ListenerPrinterConsole();
         complexProcessor.addListener(listenerPrinter);
 
