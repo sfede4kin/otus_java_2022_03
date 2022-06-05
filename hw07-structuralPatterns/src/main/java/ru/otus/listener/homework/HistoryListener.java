@@ -16,9 +16,7 @@ public class HistoryListener implements Listener, HistoryReader {
     @Override
     public void onUpdated(Message msg) {
         try {
-            var msgCloned = msg.toBuilder()
-                                        .field13((ObjectForMessage)msg.getField13().clone())
-                                        .build();
+            var msgCloned = (Message)msg.clone();
             historyMsgMap.put(msgCloned.getId(), msgCloned);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
