@@ -22,7 +22,7 @@ public class FileSerializer implements Serializer {
             mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
             mapper.writeValue(bufferedWriter, data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileProcessException(e);
         }
     }
 }
