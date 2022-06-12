@@ -10,9 +10,7 @@ import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Manager;
 import ru.otus.crm.service.DbServiceClientImpl;
 import ru.otus.crm.service.DbServiceManagerImpl;
-import ru.otus.jdbc.mapper.EntityClassMetaData;
-import ru.otus.jdbc.mapper.EntitySQLMetaData;
-import ru.otus.jdbc.mapper.DataTemplateJdbc;
+import ru.otus.jdbc.mapper.*;
 
 import javax.sql.DataSource;
 
@@ -31,14 +29,16 @@ public class HomeWork {
         var dbExecutor = new DbExecutorImpl();
 
 // Работа с клиентом
-        EntityClassMetaData entityClassMetaDataClient; // = new EntityClassMetaDataImpl();
-        EntitySQLMetaData entitySQLMetaDataClient = null; //= new EntitySQLMetaDataImpl();
+        var entityClassMetaDataClient = new EntityClassMetaDataImpl<>(Client.class);
+        var entitySQLMetaDataClient = new EntitySQLMetaDataImpl(entityClassMetaDataClient);
+/*        log.debug(entitySQLMetaDataClient.getSelectAllSql());
+        log.debug(entitySQLMetaDataClient.getSelectByIdSql());
+        log.debug(entitySQLMetaDataClient.getInsertSql());
+        log.debug(entitySQLMetaDataClient.getUpdateSql());*/
         var dataTemplateClient = new DataTemplateJdbc<Client>(dbExecutor, entitySQLMetaDataClient); //реализация DataTemplate, универсальная
 
 // Код дальше должен остаться
         var dbServiceClient = new DbServiceClientImpl(transactionRunner, dataTemplateClient);
-        dbServiceClient.saveClient(new Client("dbServiceFirst"));
-
         var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));
         var clientSecondSelected = dbServiceClient.getClient(clientSecond.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found, id:" + clientSecond.getId()));
@@ -46,8 +46,12 @@ public class HomeWork {
 
 // Сделайте тоже самое с классом Manager (для него надо сделать свою таблицу)
 
-        EntityClassMetaData entityClassMetaDataManager; // = new EntityClassMetaDataImpl();
-        EntitySQLMetaData entitySQLMetaDataManager = null; //= new EntitySQLMetaDataImpl();
+        var entityClassMetaDataManager = new EntityClassMetaDataImpl<>(Manager.class);
+        var entitySQLMetaDataManager = new EntitySQLMetaDataImpl(entityClassMetaDataManager);
+/*        log.debug(entitySQLMetaDataManager.getSelectAllSql());
+        log.debug(entitySQLMetaDataManager.getSelectByIdSql());
+        log.debug(entitySQLMetaDataManager.getInsertSql());
+        log.debug(entitySQLMetaDataManager.getUpdateSql());*/
         var dataTemplateManager = new DataTemplateJdbc<Manager>(dbExecutor, entitySQLMetaDataManager);
 
         var dbServiceManager = new DbServiceManagerImpl(transactionRunner, dataTemplateManager);

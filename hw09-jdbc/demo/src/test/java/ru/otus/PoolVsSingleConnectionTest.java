@@ -36,10 +36,6 @@ class PoolVsSingleConnectionTest {
             .withDatabaseName("testDataBase")
             .withUsername("owner")
             .withPassword("secret")
-    //        .withExposedPorts(5432)
-    //        .withCreateContainerCmdModifier(cmd -> cmd.withHostConfig(
-    //                new HostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(5432), new ExposedPort(5430)))
-    //        ))
             .withClasspathResourceMapping("00_createTables.sql", "/docker-entrypoint-initdb.d/00_createTables.sql", BindMode.READ_ONLY)
             .withClasspathResourceMapping("01_insertData.sql", "/docker-entrypoint-initdb.d/01_insertData.sql", BindMode.READ_ONLY);
 
