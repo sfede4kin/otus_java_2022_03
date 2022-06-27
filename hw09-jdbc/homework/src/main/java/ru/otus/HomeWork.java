@@ -31,11 +31,7 @@ public class HomeWork {
 // Работа с клиентом
         var entityClassMetaDataClient = new EntityClassMetaDataImpl<>(Client.class);
         var entitySQLMetaDataClient = new EntitySQLMetaDataImpl(entityClassMetaDataClient);
-/*        log.debug(entitySQLMetaDataClient.getSelectAllSql());
-        log.debug(entitySQLMetaDataClient.getSelectByIdSql());
-        log.debug(entitySQLMetaDataClient.getInsertSql());
-        log.debug(entitySQLMetaDataClient.getUpdateSql());*/
-        var dataTemplateClient = new DataTemplateJdbc<Client>(dbExecutor, entitySQLMetaDataClient); //реализация DataTemplate, универсальная
+        var dataTemplateClient = new DataTemplateJdbc<Client>(dbExecutor, entityClassMetaDataClient, entitySQLMetaDataClient); //реализация DataTemplate, универсальная
 
 // Код дальше должен остаться
         var dbServiceClient = new DbServiceClientImpl(transactionRunner, dataTemplateClient);
@@ -48,11 +44,7 @@ public class HomeWork {
 
         var entityClassMetaDataManager = new EntityClassMetaDataImpl<>(Manager.class);
         var entitySQLMetaDataManager = new EntitySQLMetaDataImpl(entityClassMetaDataManager);
-/*        log.debug(entitySQLMetaDataManager.getSelectAllSql());
-        log.debug(entitySQLMetaDataManager.getSelectByIdSql());
-        log.debug(entitySQLMetaDataManager.getInsertSql());
-        log.debug(entitySQLMetaDataManager.getUpdateSql());*/
-        var dataTemplateManager = new DataTemplateJdbc<Manager>(dbExecutor, entitySQLMetaDataManager);
+        var dataTemplateManager = new DataTemplateJdbc<Manager>(dbExecutor, entityClassMetaDataManager, entitySQLMetaDataManager);
 
         var dbServiceManager = new DbServiceManagerImpl(transactionRunner, dataTemplateManager);
         dbServiceManager.saveManager(new Manager("ManagerFirst"));

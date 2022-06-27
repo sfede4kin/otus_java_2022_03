@@ -20,10 +20,15 @@ import java.util.Optional;
 public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     private final DbExecutor dbExecutor;
+
+    private final EntityClassMetaData<?> entityClassMetaData;
     private final EntitySQLMetaData entitySQLMetaData;
 
-    public DataTemplateJdbc(DbExecutor dbExecutor, EntitySQLMetaData entitySQLMetaData) {
+    public DataTemplateJdbc(DbExecutor dbExecutor,
+                            EntityClassMetaData<?> entityClassMetaData,
+                            EntitySQLMetaData entitySQLMetaData) {
         this.dbExecutor = dbExecutor;
+        this.entityClassMetaData = entityClassMetaData;
         this.entitySQLMetaData = entitySQLMetaData;
     }
 
@@ -32,7 +37,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     public Optional<T> findById(Connection connection, long id) {
         return dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectByIdSql(), List.of(id), rs -> {
             try {
-                var clazz = entitySQLMetaData.getEntityClassMetaData().getConstructor().getDeclaringClass();
+                var clazz = entityClassMetaData.getConstructor().getDeclaringClass();
                 if (rs.next()) {
                     List<Object> objParamList = getObjParamList(rs);
                     return (T)ReflectionUtil.instantiate(clazz, objParamList.toArray());
@@ -50,7 +55,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         return dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectAllSql(), Collections.emptyList(), rs -> {
             var objList = new ArrayList<T>();
             try {
-                var clazz = entitySQLMetaData.getEntityClassMetaData().getConstructor().getDeclaringClass();
+                var clazz = entityClassMetaData.getConstructor().getDeclaringClass();
                 while (rs.next()) {
                     List<Object> objParamList = getObjParamList(rs);
                     objList.add((T)ReflectionUtil.instantiate(clazz, objParamList.toArray()));
@@ -65,7 +70,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     @Override
     public long insert(Connection connection, T client) {
         try {
-            List<Object> objList = getFieldsValues(client, entitySQLMetaData.getEntityClassMetaData().getFieldsWithoutId());
+            List<Object> objList = getFieldsValues(client, entityClassMetaData.getFieldsWithoutId());
             return dbExecutor.executeStatement(connection, entitySQLMetaData.getInsertSql(), objList);
         } catch (Exception e) {
             throw new DataTemplateException(e);
@@ -75,8 +80,8 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     @Override
     public void update(Connection connection, T client) {
         try {
-            List<Object> objList = getFieldsValues(client, entitySQLMetaData.getEntityClassMetaData().getFieldsWithoutId());
-            Field idField = entitySQLMetaData.getEntityClassMetaData().getIdField();
+            List<Object> objList = getFieldsValues(client, entityClassMetaData.getFieldsWithoutId());
+            Field idField = entityClassMetaData.getIdField();
             idField.setAccessible(true);
             objList.add(idField.get(client));
             dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), objList);
@@ -103,8 +108,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         for(Field f : fieldList){
             f.setAccessible(true);
             objList.add(f.get(obj));
-        };
-
+        }
         return objList;
     }
 

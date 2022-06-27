@@ -6,69 +6,50 @@ import java.util.stream.Collectors;
 public class EntitySQLMetaDataImpl implements EntitySQLMetaData{
 
     private final EntityClassMetaData<?> classMeta;
-    private final StringBuilder sb;
 
     public EntitySQLMetaDataImpl(EntityClassMetaData<?> classMeta){
         this.classMeta = classMeta;
-        sb = new StringBuilder();
     }
 
     @Override
     public String getSelectAllSql() {
-        sb.setLength(0);
-        sb.append("select ")
-          .append(getAllFields())
-          .append(" from ")
-          .append(classMeta.getName());
-
-        return sb.toString();
+        return "select " +
+                getAllFields() +
+                " from " +
+                classMeta.getName();
     }
 
     @Override
     public String getSelectByIdSql() {
-        sb.setLength(0);
-        sb.append("select ")
-          .append(getAllFields())
-          .append(" from ")
-          .append(classMeta.getName())
-          .append(" where ")
-          .append(classMeta.getIdField().getName())
-          .append(" = ?");
-
-        return sb.toString();
+        return "select " +
+                getAllFields() +
+                " from " +
+                classMeta.getName() +
+                " where " +
+                classMeta.getIdField().getName() +
+                " = ?";
     }
 
     @Override
     public String getInsertSql() {
-        sb.setLength(0);
-        sb.append("insert into ")
-                .append(classMeta.getName())
-                .append("(")
-                .append(getFieldsWithoutId())
-                .append(") values (")
-                .append(getInsertBind())
-                .append(")");
-
-        return sb.toString();
+        return "insert into " +
+                classMeta.getName() +
+                "(" +
+                getFieldsWithoutId() +
+                ") values (" +
+                getInsertBind() +
+                ")";
     }
 
     @Override
     public String getUpdateSql() {
-        sb.setLength(0);
-
-        sb.append("update ")
-                .append(classMeta.getName())
-                .append(" set ")
-                .append(getUpdateFieldsWithoutIdBind())
-                .append(" where ")
-                .append(classMeta.getIdField().getName())
-                .append(" = ?");
-
-        return sb.toString();
-    }
-
-    public EntityClassMetaData<?> getEntityClassMetaData(){
-        return classMeta;
+        return "update " +
+                classMeta.getName() +
+                " set " +
+                getUpdateFieldsWithoutIdBind() +
+                " where " +
+                classMeta.getIdField().getName() +
+                " = ?";
     }
 
     private String getAllFields(){
