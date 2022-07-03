@@ -1,12 +1,9 @@
 package ru.otus.crm.model;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client")
@@ -19,6 +16,16 @@ public class Client implements Cloneable {
 
     @Column(name = "name")
     private String name;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "address_id")
+    private Address address;
+
+    //Для избежания лишних update в таблице phones при вставке новых записей
+    //требуется двунаправленная связь с явным указанием FK на стороне связи "многие"
+    //Также треубется явно выполнять привязку клиента к телефону (см. конструктор)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "client")
+    private List<Phone> phones;
 
     public Client() {
     }
@@ -33,9 +40,18 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
+    //https://www.baeldung.com/hibernate-not-null-error#:~:text=In%20particular%2C%20we'll%20consider,column%20marked%20with%20nullable%20%3D%20false
+    public Client(Long id, String name, Address address, List<Phone> phones) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.phones = phones;
+        phones.forEach(p -> p.setClient(this));
+    }
+
     @Override
     public Client clone() {
-        return new Client(this.id, this.name);
+        return new Client(this.id, this.name, this.address.clone(), new ArrayList<>(this.phones));
     }
 
     public Long getId() {
@@ -52,6 +68,22 @@ public class Client implements Cloneable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public List<Phone> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
     }
 
     @Override
