@@ -38,7 +38,6 @@ public class DataTemplateHibernate<T> implements DataTemplate<T> {
     @Override
     public void insert(Session session, T object) {
         session.persist(object);
-        session.flush(); //to get object id
     }
 
     @Override
