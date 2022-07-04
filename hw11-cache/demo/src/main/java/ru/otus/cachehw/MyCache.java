@@ -22,15 +22,14 @@ public class MyCache<K, V> implements HwCache<K, V> {
 
     @Override
     public void remove(K key) {
-        notify(key, weakHashMap.get(key), "remove");
+        notify(key,"remove");
         weakHashMap.remove(key);
     }
 
     @Override
     public V get(K key) {
-        V value = weakHashMap.get(key);
-        notify(key, value,"get");
-        return value;
+        notify(key,"get");
+        return weakHashMap.get(key);
     }
 
     @Override
