@@ -2,7 +2,6 @@ package ru.otus.crm.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.cachehw.ClientKey;
 import ru.otus.cachehw.HwCache;
 import ru.otus.cachehw.MyCache;
 import ru.otus.core.repository.DataTemplate;
@@ -17,7 +16,7 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
-    private final HwCache<ClientKey, Client> cache;
+    private final HwCache<String, Client> cache;
 
     public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
         this.transactionManager = transactionManager;
@@ -64,11 +63,11 @@ public class DbServiceClientImpl implements DBServiceClient {
     }
 
     private void addClientToCache(Client client){
-        cache.put(new ClientKey(client.getId()), client);
+        cache.put(String.valueOf(client.getId()), client);
         log.info("client cached");
     }
 
     private Client getClientFromCache(long id){
-        return cache.get(new ClientKey(id));
+        return cache.get(String.valueOf(id));
     }
 }
