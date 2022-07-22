@@ -3,6 +3,8 @@ package ru.otus;
 import ru.otus.appcontainer.AppComponentsContainerImpl;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.config.AppConfig;
+import ru.otus.config.AppConfig1;
+import ru.otus.config.AppConfig2;
 import ru.otus.services.GameProcessor;
 import ru.otus.services.GameProcessorImpl;
 
