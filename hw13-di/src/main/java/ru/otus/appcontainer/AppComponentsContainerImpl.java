@@ -15,21 +15,22 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
-    public AppComponentsContainerImpl(Class<?> initialConfigClass) {
+    public AppComponentsContainerImpl(Class<?>... initialConfigClass) {
         processConfig(initialConfigClass);
     }
 
-    private void processConfig(Class<?> configClass) {
+    private void processConfig(Class<?>... configClass) {
         checkConfigClass(configClass);
-
-/*        final Map<AppComponentsContainerConfig, Class<?>> annTreeMap = new TreeMap<>(
+        final Map<AppComponentsContainerConfig, Class<?>> annTreeMap = new TreeMap<>(
                                                 Comparator.comparing(AppComponentsContainerConfig::order));
 
         Arrays.stream(configClass)
                 .forEach(c -> annTreeMap.put(c.getAnnotation(AppComponentsContainerConfig.class), c));
 
-        annTreeMap.forEach((k,v) -> processConfig(v));*/
+        annTreeMap.forEach((a,c) -> processConfig(c));
+    }
 
+    private void processConfig(Class<?> configClass) {
         final Map<AppComponent, Method> annTreeMap = new TreeMap<>(Comparator.comparing(a -> a.order() + a.name()));
 
         Arrays.stream(configClass.getDeclaredMethods())
@@ -54,7 +55,6 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }catch (Exception e){
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
