@@ -1,5 +1,10 @@
 package ru.otus.appcontainer;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
@@ -18,6 +23,9 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     public AppComponentsContainerImpl(Class<?>... initialConfigClass) {
         processConfig(initialConfigClass);
     }
+    public AppComponentsContainerImpl(String pkg) {
+        scanClasses(pkg);
+    }
 
     private void processConfig(Class<?>... configClass) {
         checkConfigClass(configClass);
@@ -27,17 +35,17 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         Arrays.stream(configClass)
                 .forEach(c -> annTreeMap.put(c.getAnnotation(AppComponentsContainerConfig.class), c));
 
-        annTreeMap.forEach((a,c) -> processConfig(c));
+        annTreeMap.forEach((a,c) -> processComponent(c));
     }
 
-    private void processConfig(Class<?> configClass) {
+    private void processComponent(Class<?> configClass) {
         final Map<AppComponent, Method> annTreeMap = new TreeMap<>(Comparator.comparing(a -> a.order() + a.name()));
 
         Arrays.stream(configClass.getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(AppComponent.class))
                 .forEach(m -> annTreeMap.put(m.getAnnotation(AppComponent.class), m));
 
-        logger.debug("annTreeMap: {}", annTreeMap.toString());
+        logger.debug("annTreeMap: {}", annTreeMap);
 
         try {
             Object configClassInstance = configClass.getDeclaredConstructor().newInstance();
@@ -49,11 +57,26 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 appComponentsByName.put(method.getName(), appComponent);
             }
 
-            logger.debug("appComponents: {}", appComponents.toString());
-            logger.debug("appComponentsByName: {}", appComponentsByName.toString());
+            logger.debug("appComponents: {}", appComponents);
+            logger.debug("appComponentsByName: {}", appComponentsByName);
 
         }catch (Exception e){
             throw new RuntimeException(e);
+        }
+    }
+
+    private void scanClasses(String pkg){
+        //Фильтр исключения AppConfig.class, чтобы не было конфиликтов с другими конфигурациями
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                                            .setUrls(ClasspathHelper.forPackage(pkg))
+                                            .setScanners(Scanners.TypesAnnotated)
+                                            .filterInputsBy(new FilterBuilder().excludePattern(".*AppConfig.class"))
+        );
+
+        Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class);
+        logger.debug("Classes scanned: {}", classSet);
+        if(classSet.size() > 0){
+            processConfig(classSet.toArray(Class<?>[]::new));
         }
     }
 
@@ -93,7 +116,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 }
             }
         }
-        logger.debug("Args filtered: {}", argsFiltered.toString());
+        logger.debug("Args filtered: {}", argsFiltered);
         return argsFiltered.toArray();
     }
 }
