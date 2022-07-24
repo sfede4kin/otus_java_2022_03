@@ -16,7 +16,6 @@ import ru.otus.appcontainer.api.exception.MultipleAppComponentInstanceException;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
