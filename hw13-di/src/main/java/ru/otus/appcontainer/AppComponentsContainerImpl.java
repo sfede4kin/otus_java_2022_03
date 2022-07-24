@@ -8,12 +8,15 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
-import ru.otus.appcontainer.api.AppComponentsConfigNotFoundException;
+import ru.otus.appcontainer.api.exception.AppComponentNotFoundException;
+import ru.otus.appcontainer.api.exception.AppComponentsConfigNotFoundException;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
+import ru.otus.appcontainer.api.exception.MultipleAppComponentInstanceException;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
@@ -30,32 +33,27 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private void processConfig(Class<?>... configClass) {
         checkConfigClass(configClass);
-        final Map<AppComponentsContainerConfig, Class<?>> annTreeMap = new TreeMap<>(
-                                                Comparator.comparing(AppComponentsContainerConfig::order));
-
         Arrays.stream(configClass)
-                .forEach(c -> annTreeMap.put(c.getAnnotation(AppComponentsContainerConfig.class), c));
-
-        annTreeMap.forEach((a,c) -> processComponent(c));
+              .sorted(Comparator.comparing(c -> c.getAnnotation(AppComponentsContainerConfig.class).order()))
+              .forEach(this::processComponent);
     }
 
     private void processComponent(Class<?> configClass) {
-        final Map<AppComponent, Method> annTreeMap = new TreeMap<>(Comparator.comparing(a -> a.order() + a.name()));
-
-        Arrays.stream(configClass.getDeclaredMethods())
+        var methodList = Arrays.stream(configClass.getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(AppComponent.class))
-                .forEach(m -> annTreeMap.put(m.getAnnotation(AppComponent.class), m));
+                .sorted(Comparator.comparing(m -> m.getAnnotation(AppComponent.class).order()))
+                .toList();
 
-        logger.debug("annTreeMap: {}", annTreeMap);
+        logger.debug("methodList: {}", methodList);
 
         try {
             Object configClassInstance = configClass.getDeclaredConstructor().newInstance();
 
-            for(Method method : annTreeMap.values()){
+            for(Method method : methodList){
                 method.setAccessible(true);
-                Object appComponent = method.invoke(configClassInstance, filterMethodArgs(method, appComponents));
+                Object appComponent = method.invoke(configClassInstance, filterMethodArgs(method));
                 appComponents.add(appComponent);
-                appComponentsByName.put(method.getName(), appComponent);
+                appComponentsByName.put(method.toString(), appComponent);
             }
 
             logger.debug("appComponents: {}", appComponents);
@@ -85,18 +83,25 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(Class<C> componentClass) {
+        var objList = new ArrayList<>();
         for(Object obj : appComponents){
+            if(objList.size() > 1) throw new MultipleAppComponentInstanceException();
             if(componentClass.isInstance(obj)){
-                return (C)obj;
+                objList.add(obj);
             }
         }
-        return null;
+        if(objList.size() == 0) throw new AppComponentNotFoundException();
+        return (C)objList.get(0);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(String componentName) {
-        return (C)appComponentsByName.get(componentName);
+        Optional<C> comp = (Optional<C>) appComponentsByName.entrySet().stream()
+                                                                    .filter(e -> e.getKey().contains(componentName))
+                                                                    .map(Map.Entry::getValue)
+                                                                    .findFirst();
+        return comp.orElseThrow();
     }
 
     private void checkConfigClass(Class<?>... configClass) {
@@ -107,18 +112,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         });
     }
 
-    private static Object[] filterMethodArgs(Method method, List<Object> appComponents){
+    private Object[] filterMethodArgs(Method method){
         logger.debug("Method to filter args: {}", method.toString());
-        List<Object> argsFiltered = new ArrayList<>();
 
-        for(Class<?> pt : method.getParameterTypes()){
-            for(Object obj : appComponents){
-                if(pt.isInstance(obj)){
-                    argsFiltered.add(obj);
-                }
-            }
-        }
-        logger.debug("Args filtered: {}", argsFiltered);
-        return argsFiltered.toArray();
+        return Arrays.stream(method.getParameterTypes())
+                        .map(this::getAppComponent)
+                        .toArray();
     }
 }

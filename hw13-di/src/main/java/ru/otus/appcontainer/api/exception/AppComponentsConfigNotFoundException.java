@@ -1,4 +1,4 @@
-package ru.otus.appcontainer.api;
+package ru.otus.appcontainer.api.exception;
 
 public class AppComponentsConfigNotFoundException extends RuntimeException{
     public AppComponentsConfigNotFoundException()  {
