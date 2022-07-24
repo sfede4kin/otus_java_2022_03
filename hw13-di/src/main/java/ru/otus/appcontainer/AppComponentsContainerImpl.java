@@ -8,6 +8,7 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
+import ru.otus.appcontainer.api.AppComponentsConfigNotFoundException;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 
@@ -75,9 +76,10 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
         Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class);
         logger.debug("Classes scanned: {}", classSet);
-        if(classSet.size() > 0){
-            processConfig(classSet.toArray(Class<?>[]::new));
+        if(classSet.size() == 0){
+            throw new AppComponentsConfigNotFoundException();
         }
+        processConfig(classSet.toArray(Class<?>[]::new));
     }
 
     @Override
