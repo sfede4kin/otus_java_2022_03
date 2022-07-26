@@ -23,9 +23,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
+
     public AppComponentsContainerImpl(Class<?>... initialConfigClass) {
         processConfig(initialConfigClass);
     }
+
     public AppComponentsContainerImpl(String pkg) {
         scanClasses(pkg);
     }
@@ -33,8 +35,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?>... configClass) {
         checkConfigClass(configClass);
         Arrays.stream(configClass)
-              .sorted(Comparator.comparing(c -> c.getAnnotation(AppComponentsContainerConfig.class).order()))
-              .forEach(this::processComponent);
+                .sorted(Comparator.comparing(c -> c.getAnnotation(AppComponentsContainerConfig.class).order()))
+                .forEach(this::processComponent);
     }
 
     private void processComponent(Class<?> configClass) {
@@ -48,32 +50,32 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         try {
             Object configClassInstance = configClass.getDeclaredConstructor().newInstance();
 
-            for(Method method : methodList){
+            for (Method method : methodList) {
                 method.setAccessible(true);
                 Object appComponent = method.invoke(configClassInstance, filterMethodArgs(method));
                 appComponents.add(appComponent);
-                appComponentsByName.put(method.toString(), appComponent);
+                appComponentsByName.put(method.getDeclaredAnnotation(AppComponent.class).name(), appComponent);
             }
 
             logger.debug("appComponents: {}", appComponents);
             logger.debug("appComponentsByName: {}", appComponentsByName);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void scanClasses(String pkg){
+    private void scanClasses(String pkg) {
         //Фильтр исключения AppConfig.class, чтобы не было конфиликтов с другими конфигурациями
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                                            .setUrls(ClasspathHelper.forPackage(pkg))
-                                            .setScanners(Scanners.TypesAnnotated)
-                                            .filterInputsBy(new FilterBuilder().excludePattern(".*AppConfig.class"))
+                .setUrls(ClasspathHelper.forPackage(pkg))
+                .setScanners(Scanners.TypesAnnotated)
+                .filterInputsBy(new FilterBuilder().excludePattern(".*AppConfig.class"))
         );
 
         Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class);
         logger.debug("Classes scanned: {}", classSet);
-        if(classSet.size() == 0){
+        if (classSet.size() == 0) {
             throw new AppComponentsConfigNotFoundException();
         }
         processConfig(classSet.toArray(Class<?>[]::new));
@@ -83,23 +85,24 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(Class<C> componentClass) {
         var objList = new ArrayList<>();
-        for(Object obj : appComponents){
-            if(objList.size() > 1) throw new MultipleAppComponentInstanceException();
-            if(componentClass.isInstance(obj)){
+        for (Object obj : appComponents) {
+            if (objList.size() > 1) {
+                throw new MultipleAppComponentInstanceException();
+            }
+            if (componentClass.isInstance(obj)) {
                 objList.add(obj);
             }
         }
-        if(objList.size() == 0) throw new AppComponentNotFoundException();
-        return (C)objList.get(0);
+        if (objList.size() == 0) {
+            throw new AppComponentNotFoundException();
+        }
+        return (C) objList.get(0);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(String componentName) {
-        Optional<C> comp = (Optional<C>) appComponentsByName.entrySet().stream()
-                                                                    .filter(e -> e.getKey().contains(componentName))
-                                                                    .map(Map.Entry::getValue)
-                                                                    .findFirst();
+        Optional<C> comp = Optional.ofNullable((C) appComponentsByName.get(componentName));
         return comp.orElseThrow();
     }
 
@@ -111,11 +114,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         });
     }
 
-    private Object[] filterMethodArgs(Method method){
+    private Object[] filterMethodArgs(Method method) {
         logger.debug("Method to filter args: {}", method.toString());
 
         return Arrays.stream(method.getParameterTypes())
-                        .map(this::getAppComponent)
-                        .toArray();
+                .map(this::getAppComponent)
+                .toArray();
     }
 }
