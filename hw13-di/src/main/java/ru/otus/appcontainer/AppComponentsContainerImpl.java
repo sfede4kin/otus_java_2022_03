@@ -51,10 +51,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             Object configClassInstance = configClass.getDeclaredConstructor().newInstance();
 
             for (Method method : methodList) {
+                String appCompName = method.getDeclaredAnnotation(AppComponent.class).name();
+
+                if(appComponentsByName.containsKey(appCompName)){
+                    throw new MultipleAppComponentInstanceException();
+                }
+
                 method.setAccessible(true);
                 Object appComponent = method.invoke(configClassInstance, filterMethodArgs(method));
                 appComponents.add(appComponent);
-                appComponentsByName.put(method.getDeclaredAnnotation(AppComponent.class).name(), appComponent);
+                appComponentsByName.put(appCompName, appComponent);
             }
 
             logger.debug("appComponents: {}", appComponents);
@@ -103,7 +109,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @SuppressWarnings("unchecked")
     public <C> C getAppComponent(String componentName) {
         Optional<C> comp = Optional.ofNullable((C) appComponentsByName.get(componentName));
-        return comp.orElseThrow();
+        return comp.orElseThrow(AppComponentNotFoundException::new);
     }
 
     private void checkConfigClass(Class<?>... configClass) {
