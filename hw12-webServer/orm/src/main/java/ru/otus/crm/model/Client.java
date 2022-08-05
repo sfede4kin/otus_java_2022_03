@@ -17,14 +17,14 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 
     //Для избежания лишних update в таблице phones при вставке новых записей
     //требуется двунаправленная связь с явным указанием FK на стороне связи "многие"
     //Также треубется явно выполнять привязку клиента к телефону (см. конструктор)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "client")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "client")
     private List<Phone> phones;
 
     public Client() {
