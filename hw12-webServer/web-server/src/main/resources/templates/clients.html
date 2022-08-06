@@ -22,6 +22,14 @@
                 .then(client => clientDataContainer.innerHTML = 'Клиент создан: ' + JSON.stringify(client));
         }
     </script>
+    <script>
+        function clearForm() {
+            document.getElementById('clientName').value = "";
+            document.getElementById('clientAddress').value = "";
+            document.getElementById('clientPhone').value = "";
+        }
+    </script>
+
 </head>
 
 <body>
@@ -41,7 +49,7 @@
         <button type="submit">Save form</button>
     </p>
     <p>
-        <button type="button" onclick="saveClient()">Save REST</button>
+        <button type="button" onclick="saveClient();clearForm()">Save REST</button>
     </p>
 </form>
 <pre id = "clientDataContainer"></pre>
