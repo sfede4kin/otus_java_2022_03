@@ -34,7 +34,11 @@ public class ClientsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
-        responseClients(response);
+        var clientList = DTOUtil.cloneClientList(dbServiceClient.findAll());
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put(TEMPLATE_ATTR_CLIENT_LIST, clientList);
+        response.setContentType("text/html");
+        response.getWriter().println(templateProcessor.getPage(CLIENTS_PAGE_TEMPLATE, paramsMap));
     }
 
     @Override
@@ -43,16 +47,6 @@ public class ClientsServlet extends HttpServlet {
         String clientAddress = req.getParameter("address");
         String clientPhone = req.getParameter("phone");
         dbServiceClient.saveClient(new Client(null, clientName, new Address(clientAddress), List.of(new Phone(clientPhone))));
-
-        responseClients(response);
+        response.sendRedirect("/clients");
     }
-
-    private void responseClients(HttpServletResponse response) throws IOException{
-        var clientList = DTOUtil.cloneClientList(dbServiceClient.findAll());
-        Map<String, Object> paramsMap = new HashMap<>();
-        paramsMap.put(TEMPLATE_ATTR_CLIENT_LIST, clientList);
-        response.setContentType("text/html");
-        response.getWriter().println(templateProcessor.getPage(CLIENTS_PAGE_TEMPLATE, paramsMap));
-    }
-
 }

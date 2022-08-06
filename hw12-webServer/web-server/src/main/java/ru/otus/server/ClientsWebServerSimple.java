@@ -11,7 +11,6 @@ import ru.otus.crm.service.DBServiceClient;
 import ru.otus.helpers.FileSystemHelper;
 import ru.otus.services.TemplateProcessor;
 import ru.otus.servlet.ClientApiServlet;
-import ru.otus.servlet.ClientsApiServlet;
 import ru.otus.servlet.ClientsServlet;
 
 
@@ -56,7 +55,7 @@ public class ClientsWebServerSimple implements ClientsWebServer {
 
         HandlerList handlers = new HandlerList();
         handlers.addHandler(resourceHandler);
-        handlers.addHandler(applySecurity(servletContextHandler, "/clients", "/api/clients", "/api/client/*"));
+        handlers.addHandler(applySecurity(servletContextHandler, "/clients", "/api/client/*"));
 
 
         server.setHandler(handlers);
@@ -78,7 +77,6 @@ public class ClientsWebServerSimple implements ClientsWebServer {
     private ServletContextHandler createServletContextHandler() {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletContextHandler.addServlet(new ServletHolder(new ClientsServlet(templateProcessor, dbServiceClient)), "/clients");
-        servletContextHandler.addServlet(new ServletHolder(new ClientsApiServlet(dbServiceClient, gson)), "/api/clients");
         servletContextHandler.addServlet(new ServletHolder(new ClientApiServlet(dbServiceClient, gson)), "/api/client/*");
         return servletContextHandler;
     }

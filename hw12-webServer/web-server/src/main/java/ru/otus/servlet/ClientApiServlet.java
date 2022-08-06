@@ -29,9 +29,19 @@ public class ClientApiServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var client = dbServiceClient.getClient(extractIdFromRequest(request)).orElse(null);
-        if (client != null) {
-            responseClient(response, client);
+        long id = extractIdFromRequest(request);
+        if (id == -1L) {
+            var clientList = DTOUtil.cloneClientList(dbServiceClient.findAll());
+            if (clientList.size() > 0) {
+                response.setContentType("application/json;charset=UTF-8");
+                ServletOutputStream out = response.getOutputStream();
+                out.print(gson.toJson(clientList));
+            }
+        } else {
+            var client = dbServiceClient.getClient(extractIdFromRequest(request)).orElse(null);
+            if (client != null) {
+                responseClient(response, client);
+            }
         }
     }
 
@@ -42,6 +52,9 @@ public class ClientApiServlet extends HttpServlet {
     }
 
     private long extractIdFromRequest(HttpServletRequest request) {
+        if(request.getPathInfo() == null){
+            return -1L;
+        }
         String[] path = request.getPathInfo().split("/");
         String id = (path.length > 1) ? path[ID_PATH_PARAM_POSITION] : String.valueOf(-1);
         return Long.parseLong(id);
