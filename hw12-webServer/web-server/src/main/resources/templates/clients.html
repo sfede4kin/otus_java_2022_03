@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Клиенты</title>
+    <script>
+        function saveClient() {
+            const clientDataContainer = document.getElementById('clientDataContainer');
+            const clientNameInput = document.getElementById("clientName");
+            const clientName = clientNameInput.value;
+            const clientAddressInput = document.getElementById("clientAddress");
+            const clientAddress = clientAddressInput.value;
+            const clientPhoneInput = document.getElementById("clientPhone");
+            const clientPhone = clientPhoneInput.value;
+            fetch('/api/client/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name: clientName, address: {street: clientAddress}, phones:[{number: clientPhone}]})
+             })
+                .then(response => response.json())
+                .then(client => clientDataContainer.innerHTML = 'Клиент создан: ' + JSON.stringify(client));
+        }
+    </script>
+    <script>
+        function clearForm() {
+            document.getElementById('clientName').value = "";
+            document.getElementById('clientAddress').value = "";
+            document.getElementById('clientPhone').value = "";
+        }
+    </script>
+
+</head>
+
+<body>
+
+<form name="create-form" method="post" action="/clients">
+    <h1>Новый клиент</h1>
+    <p><b>Имя</b><br>
+        <input id="clientName" name="name" type="text"/>
+    </p>
+    <p><b>Адрес</b><br>
+        <input id="clientAddress" name="address" type="text"/>
+    </p>
+    <p><b>Телефон</b><br>
+        <input id="clientPhone" name="phone" type="text"/>
+    </p>
+    <p>
+        <button type="submit">Save form</button>
+    </p>
+    <p>
+        <button type="button" onclick="saveClient();clearForm()">Save REST</button>
+    </p>
+</form>
+<pre id = "clientDataContainer"></pre>
+
+<h4>Список клиентов</h4>
+<table style="width: 400px">
+    <thead>
+        <tr>
+            <td style="width: 50px">Id</td>
+            <td style="width: 150px">Имя</td>
+            <td style="width: 100px">Адрес</td>
+            <td style="width: 100px">Телефон</td>
+        </tr>
+    </thead>
+    <tbody>
+        <#list clientList as client>
+            <tr>
+                <td>${client.id}</td>
+                <td>${client.name}</td>
+                <td>${client.address.street}</td>
+                <td>
+                    <table>
+                        <#list client.phones as phone>
+                            <tr>
+                                <td>${phone.number}</td>
+                            </tr>
+                        </#list>
+                    </table>
+                </td>
+            </tr>
+        </#list>
+    </tbody>
+</table>
+</body>
+</html>
