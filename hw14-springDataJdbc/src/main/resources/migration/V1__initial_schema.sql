@@ -1,15 +1,16 @@
--- Для @GeneratedValue(strategy = GenerationType.IDENTITY)
---create table client
---(
---    id   bigserial not null primary key,
---    name varchar(50)
---);
-
--- Для @GeneratedValue(strategy = GenerationType.SEQUENCE)
-create sequence hibernate_sequence start with 1 increment by 1;
-
 create table client
 (
-    id   bigint not null primary key,
-    name varchar(50)
+    id   bigserial not null primary key,
+    name varchar(50) not null
+);
+
+create table address(
+    client_id bigint not null references client (id),
+	street varchar(255) not null
+);
+
+create table phone(
+    id bigserial not null primary key,
+	number varchar(255) not null,
+	client_id bigint not null references client (id)
 );
