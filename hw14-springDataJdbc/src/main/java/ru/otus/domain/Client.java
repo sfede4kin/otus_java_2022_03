@@ -34,15 +34,17 @@ public class Client implements Persistable<Long> {
         this.phones = phones;
         this.isNew = isNew;
     }
-
+    /*
+        isNew = true -> INSERT
+        isNew = false -> UPDATE
+    */
     @PersistenceCreator
-    public Client(Long id, String name, Address address, Set<Phone> phones) {
-        this(id, name, address, phones, true);
-    }
-
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Client(@JsonProperty("name") String name, @JsonProperty("address") Address address, @JsonProperty("phones") Set<Phone> phones) {
-        this(null, name, address, phones);
+    public Client(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("address") Address address, @JsonProperty("phones") Set<Phone> phones) {
+        this(id, name, address, phones, id == null);
+    }
+    public Client(String name, Address address, Set<Phone> phones){
+        this(null, name, address, phones, true);
     }
 
     @Override

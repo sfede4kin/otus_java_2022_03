@@ -6,11 +6,11 @@ create table client
 
 create table address(
     client_id bigint not null references client (id),
-	street varchar(255) not null
+	street    varchar(255) not null
 );
 
 create table phone(
-    id bigserial not null primary key,
-	number varchar(255) not null,
+    id        bigserial not null primary key,
+	number    varchar(255) not null,
 	client_id bigint not null references client (id)
 );
