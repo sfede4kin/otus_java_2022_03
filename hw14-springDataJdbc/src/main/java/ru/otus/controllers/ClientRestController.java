@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.domain.Client;
+import ru.otus.domain.ClientDTO;
+import ru.otus.domain.util.DTOUtil;
 import ru.otus.services.ClientService;
 
 import java.util.List;
@@ -20,18 +22,19 @@ public class ClientRestController {
     }
 
     @GetMapping("/api/client/{id}")
-    public Client getClientById(@PathVariable(name = "id") long id) {
-        return clientService.findById(id).orElse(null);
+    public ClientDTO getClientById(@PathVariable(name = "id") long id) {
+        var client = clientService.findById(id);
+        return client.map(DTOUtil::cloneClientToDTO).orElse(null);
     }
 
     @GetMapping("/api/client")
-    public List<Client> getClients() {
-        return clientService.findAll();
+    public List<ClientDTO> getClients() {
+        return DTOUtil.cloneClientListToDTO(clientService.findAll());
     }
 
     @PostMapping("/api/client")
-    public Client saveClient(@RequestBody Client client) {
-        return clientService.save(client);
+    public Client saveClient(@RequestBody ClientDTO client) {
+        return clientService.save(DTOUtil.cloneClientFromDTO(client));
     }
 
 }

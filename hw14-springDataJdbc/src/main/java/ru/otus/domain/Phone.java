@@ -27,8 +27,7 @@ public class Phone {
         this.clientId = clientId;
     }
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Phone(@JsonProperty("number")  String number) {
+    public Phone(String number) {
         this(null, number, null);
     }
 

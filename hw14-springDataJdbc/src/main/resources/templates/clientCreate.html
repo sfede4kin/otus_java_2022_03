@@ -61,10 +61,10 @@
         <input id="clientName" name="name" type="text" th:value="*{name}"/>
         <br>
         <label for="clientAddress">Адрес</label>
-        <input id="clientAddress" name="address" type="text" th:value="*{address}"/>
+        <input id="clientAddress" name="address" type="text" th:value="*{address.street}"/>
         <br>
         <label for="clientAddress">Телефон</label>
-        <input id="clientPhone" name="phone" type="text" th:value="*{phone}"/>
+        <input id="clientPhone" name="phone" type="text" th:field="*{phones[0].number}"/>
     </div>
 
     <div class="row">

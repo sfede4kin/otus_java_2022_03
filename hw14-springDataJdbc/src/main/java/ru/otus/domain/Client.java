@@ -23,7 +23,6 @@ public class Client implements Persistable<Long> {
     private final Address address;
     @MappedCollection(idColumn = "client_id")
     private final Set<Phone> phones;
-
     @Transient
     private final boolean isNew;
 
@@ -39,8 +38,7 @@ public class Client implements Persistable<Long> {
         isNew = false -> UPDATE
     */
     @PersistenceCreator
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Client(@JsonProperty("id") Long id, @JsonProperty("name") String name, @JsonProperty("address") Address address, @JsonProperty("phones") Set<Phone> phones) {
+    public Client(Long id, String name, Address address, Set<Phone> phones) {
         this(id, name, address, phones, id == null);
     }
     public Client(String name, Address address, Set<Phone> phones){
@@ -48,7 +46,6 @@ public class Client implements Persistable<Long> {
     }
 
     @Override
-    @JsonIgnore
     public boolean isNew() {
         return isNew;
     }

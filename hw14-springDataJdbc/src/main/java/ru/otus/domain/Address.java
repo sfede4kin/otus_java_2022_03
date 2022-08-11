@@ -23,8 +23,7 @@ public class Address {
         this.street = street;
     }
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Address(@JsonProperty("street") String street) {
+    public Address(String street) {
         this(null, street);
     }
 

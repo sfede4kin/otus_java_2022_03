@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
-import ru.otus.domain.Address;
-import ru.otus.domain.Client;
-import ru.otus.domain.ClientDTO;
-import ru.otus.domain.Phone;
+import ru.otus.domain.*;
+import ru.otus.domain.util.DTOUtil;
 import ru.otus.services.ClientService;
 
 import java.util.List;
@@ -25,8 +23,8 @@ public class ClientController {
 
     @GetMapping({"/", "/client/list"})
     public String clientsListView(Model model) {
-        List<Client> clients = clientService.findAll();
-        model.addAttribute("clients", clients);
+        var clients = clientService.findAll();
+        model.addAttribute("clients", DTOUtil.cloneClientListToDTO(clients));
         return "clientsList";
     }
 
@@ -38,7 +36,7 @@ public class ClientController {
 
     @PostMapping("/client/save")
     public RedirectView clientSave(@ModelAttribute ClientDTO client) {
-        clientService.save(new Client(client.getName(), new Address(client.getAddress()), Set.of(new Phone(client.getPhone()))));
+        clientService.save(DTOUtil.cloneClientFromDTO(client));
         return new RedirectView("/", true);
     }
 
