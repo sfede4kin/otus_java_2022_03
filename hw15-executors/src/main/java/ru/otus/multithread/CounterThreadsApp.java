@@ -6,16 +6,16 @@ import org.slf4j.LoggerFactory;
 public class CounterThreadsApp {
     private static final Logger log = LoggerFactory.getLogger(CounterThreadsApp.class);
 
-    private static final int LOW_LIMIT = 1;
-    private static final int UPPER_LIMIT = 10;
+    private static final int COUNTER_LOW_LIMIT = 1;
+    private static final int COUNTER_UPPER_LIMIT = 10;
     private String lastThreadName = "t2";
-    private int i = 0;
-    private int j = 1;
+    private int counter = 0;
+    private int sign = 1;
 
     public static void main(String... args) {
-        CounterThreadsApp counter = new CounterThreadsApp();
-        new Thread(counter::count, "t1").start();
-        new Thread(counter::count, "t2").start();
+        CounterThreadsApp counterApp = new CounterThreadsApp();
+        new Thread(counterApp::count, "t1").start();
+        new Thread(counterApp::count, "t2").start();
     }
 
     private synchronized void count() {
@@ -27,10 +27,10 @@ public class CounterThreadsApp {
                 }
 
                 if ("t1".equals(currentThreadName)) {
-                    calcCount();
+                    calcCounter();
                 }
 
-                log.info(String.valueOf(i));
+                log.info(String.valueOf(counter));
                 lastThreadName = currentThreadName;
 
                 sleep();
@@ -42,14 +42,14 @@ public class CounterThreadsApp {
         }
     }
 
-    private void calcCount() {
-        if (i == LOW_LIMIT) {
-            j = 1;
+    private void calcCounter() {
+        if (counter == COUNTER_LOW_LIMIT) {
+            sign = 1;
         }
-        if (i == UPPER_LIMIT) {
-            j = -1;
+        if (counter == COUNTER_UPPER_LIMIT) {
+            sign = -1;
         }
-        i += j;
+        counter += sign;
     }
 
     private static void sleep() {
