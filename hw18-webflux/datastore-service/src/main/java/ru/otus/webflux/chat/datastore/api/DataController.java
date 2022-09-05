@@ -1,4 +1,4 @@
-package ru.otus.webflux.chat.api;
+package ru.otus.webflux.chat.datastore.api;
 
 
 import org.springframework.http.MediaType;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import ru.otus.webflux.chat.domain.Message;
-import ru.otus.webflux.chat.domain.MessageDto;
-import ru.otus.webflux.chat.service.DataStore;
+import ru.otus.webflux.chat.datastore.domain.Message;
+import ru.otus.webflux.chat.datastore.domain.MessageDto;
+import ru.otus.webflux.chat.datastore.service.DataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,4 +1,4 @@
-package ru.petrelevich.config;
+package ru.otus.webflux.chat.client.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.nio.NioEventLoopGroup;

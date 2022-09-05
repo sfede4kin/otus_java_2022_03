@@ -1,8 +1,8 @@
-package ru.otus.webflux.chat.service;
+package ru.otus.webflux.chat.datastore.service;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.otus.webflux.chat.domain.Message;
+import ru.otus.webflux.chat.datastore.domain.Message;
 
 public interface DataStore {
 

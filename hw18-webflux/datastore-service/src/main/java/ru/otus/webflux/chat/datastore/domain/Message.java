@@ -1,4 +1,4 @@
-package ru.otus.webflux.chat.domain;
+package ru.otus.webflux.chat.datastore.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;

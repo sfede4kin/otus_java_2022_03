@@ -1,4 +1,4 @@
-package ru.otus.webflux.chat.service;
+package ru.otus.webflux.chat.datastore.service;
 
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import ru.otus.webflux.chat.domain.Message;
-import ru.otus.webflux.chat.repository.MessageRepository;
+import ru.otus.webflux.chat.datastore.domain.Message;
+import ru.otus.webflux.chat.datastore.repository.MessageRepository;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 

@@ -1,4 +1,4 @@
-package ru.petrelevich.controllers;
+package ru.otus.webflux.chat.client.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.petrelevich.domain.Message;
+import ru.otus.webflux.chat.client.domain.Message;
 
 @Controller
 public class MessageController {
@@ -55,8 +55,8 @@ public class MessageController {
         var genericMessage = (GenericMessage<byte[]>) event.getMessage();
         var simpDestination = (String) genericMessage.getHeaders().get("simpDestination");
         if (simpDestination == null) {
-            logger.error("Can not get simpDestination header, headers:{}", genericMessage.getHeaders());
-            throw new ChatException("Can not get simpDestination header");
+            logger.error("Cannot get simpDestination header, headers:{}", genericMessage.getHeaders());
+            throw new ChatException("Cannot get simpDestination header");
         }
         var roomId = parseRoomId(simpDestination);
 
@@ -69,8 +69,8 @@ public class MessageController {
         try {
             return Long.parseLong(simpDestination.replace(TOPIC_TEMPLATE, ""));
         } catch (Exception ex) {
-            logger.error("Can not get roomId", ex);
-            throw new ChatException("Can not get roomId");
+            logger.error("Cannot get roomId", ex);
+            throw new ChatException("Cannot get roomId");
         }
     }
 
@@ -83,7 +83,7 @@ public class MessageController {
     }
 
     private Flux<Message> getMessagesByRoomId(long roomId) {
-        String uri = MAGIC_ROOM.equals(String.valueOf(roomId)) ? "/msg" : String.format("/msg/%s", roomId);
+        var uri = MAGIC_ROOM.equals(String.valueOf(roomId)) ? "/msg" : String.format("/msg/%s", roomId);
 
         return datastoreClient.get()
                 .uri(uri)

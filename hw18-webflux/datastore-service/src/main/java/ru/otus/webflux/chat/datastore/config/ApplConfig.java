@@ -1,4 +1,4 @@
-package ru.otus.webflux.chat.config;
+package ru.otus.webflux.chat.datastore.config;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
