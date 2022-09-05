@@ -27,15 +27,23 @@ public class MessageController {
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
 
+    private final static String MAGIC_ROOM = "1408";
+
     public MessageController(WebClient datastoreClient, SimpMessagingTemplate template) {
         this.datastoreClient = datastoreClient;
         this.template = template;
     }
 
     @MessageMapping("/message.{roomId}")
-    @SendTo(TOPIC_TEMPLATE + "{roomId}")
+    @SendTo({TOPIC_TEMPLATE + "{roomId}", TOPIC_TEMPLATE + MAGIC_ROOM })
     public Message getMessage(@DestinationVariable String roomId, Message message) {
         logger.info("got message:{}, roomId:{}", message, roomId);
+
+        if(MAGIC_ROOM.equals(roomId)){
+            logger.info("skip message from magic room");
+            return null;
+        }
+
         saveMessage(roomId, message)
                 .subscribe(msgId -> logger.info("message send id:{}", msgId));
         return new Message(HtmlUtils.htmlEscape(message.messageStr()));
@@ -67,6 +75,7 @@ public class MessageController {
     }
 
     private Mono<Long> saveMessage(String roomId, Message message) {
+
         return datastoreClient.post().uri(String.format("/msg/%s", roomId))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(message)
@@ -74,7 +83,10 @@ public class MessageController {
     }
 
     private Flux<Message> getMessagesByRoomId(long roomId) {
-        return datastoreClient.get().uri(String.format("/msg/%s", roomId))
+        String uri = MAGIC_ROOM.equals(String.valueOf(roomId)) ? "/msg" : String.format("/msg/%s", roomId);
+
+        return datastoreClient.get()
+                .uri(uri)
                 .accept(MediaType.APPLICATION_NDJSON)
                 .exchangeToFlux(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {

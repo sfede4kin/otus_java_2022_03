@@ -56,4 +56,17 @@ public class DataController {
                 .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
                 .subscribeOn(workerPool);
     }
+
+    //TODO Endpoint should be secured (for instance, by user role)
+    @GetMapping(value = "/msg", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<MessageDto> getMessages() {
+        log.info("getMessages all");
+        return Flux.just("OK")
+                .flatMap(ds -> dataStore.loadMessages())
+                .publishOn(workerPool)
+                .map(message -> new MessageDto(message.getMsgText()))
+                .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
+                .subscribeOn(workerPool);
+    }
+
 }
