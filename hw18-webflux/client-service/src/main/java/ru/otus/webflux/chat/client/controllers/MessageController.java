@@ -34,7 +34,7 @@ public class MessageController {
         this.template = template;
     }
 
-    @MessageMapping("/message.{roomId}")
+/*    @MessageMapping("/message.{roomId}")
     @SendTo({TOPIC_TEMPLATE + "{roomId}", TOPIC_TEMPLATE + MAGIC_ROOM })
     public Message getMessage(@DestinationVariable String roomId, Message message) {
         logger.info("got message:{}, roomId:{}", message, roomId);
@@ -47,8 +47,21 @@ public class MessageController {
         saveMessage(roomId, message)
                 .subscribe(msgId -> logger.info("message send id:{}", msgId));
         return new Message(HtmlUtils.htmlEscape(message.messageStr()));
-    }
+    }*/
 
+    @MessageMapping("/message.{roomId}")
+    public void processMessage(@DestinationVariable String roomId, Message message) {
+        logger.info("got message:{}, roomId:{}", message, roomId);
+
+        if(!MAGIC_ROOM.equals(roomId)){
+            saveMessage(roomId, message)
+                    .subscribe(msgId -> logger.info("message send id:{}", msgId));
+
+            var msg = new Message(HtmlUtils.htmlEscape(message.messageStr()));
+            template.convertAndSend(TOPIC_TEMPLATE + roomId, msg);
+            template.convertAndSend(TOPIC_TEMPLATE + MAGIC_ROOM, msg);
+        }
+    }
 
     @EventListener
     public void handleSessionSubscribeEvent(SessionSubscribeEvent event) {
